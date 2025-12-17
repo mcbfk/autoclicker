@@ -1,70 +1,70 @@
-────────────────────────────────
-AUTOCLICKER ULTRA RÁPIDO NO LINUX
-Wayland e X11 • CLI • Sem interface gráfica
-────────────────────────────────
+Autoclicker Ultra Rápido no Linux
 
-Este tutorial ensina a criar um autoclicker extremamente rápido no Linux usando apenas terminal. Ele funciona tanto em Wayland quanto em X11 e não depende de interface gráfica.
+Wayland e X11 • CLI • Sem interface gráfica
+
+Este guia mostra como criar um autoclicker extremamente rápido no Linux usando apenas terminal.
+Funciona em Wayland e X11, sem interface gráfica e com controle total via mouse.
 
 Comportamento final:
-– Um clique não pode ser ativado ou autoclick
-– Outro clique desativa
-– Velocidade máxima possível (sem atraso)
+
+Um clique no botão esquerdo ativa o autoclick
+
+Outro clique desativa
+
+Velocidade máxima possível (sem delay)
 
 ────────────────────────────────
 
-INSTALAÇÃO DAS DEPENDÊNCIAS
-────────────────────────────────
+1. Instalação das dependências
 
-Atualize o sistema e instale como ferramentas necessárias:
+Atualize o sistema e instale as ferramentas necessárias:
 
-atualização sudo apt
+sudo apt update
 sudo apt install ydotool libinput-tools
 
-O ydotool será responsável por gerar os cliques e o libinput por detectar o botão do mouse real.
+O ydotool é responsável por gerar os cliques e o libinput por capturar o evento do mouse físico.
 
 ────────────────────────────────
-2) DESCUBRIR O EVENTO DO MOUSE
-────────────────────────────────
 
-Agora você precisa identificar qual evento do sistema corresponde ao seu mouse físico.
+2. Descobrir o evento do mouse
 
-Executar:
+Você precisa identificar qual evento corresponde ao seu mouse real.
 
-sudo libinput lista-dispositivos
+Execute:
 
-Procure um dispositivo que tenha:
+sudo libinput list-devices
 
-Capacidades: ponteiro
+Procure um dispositivo com:
 
-Exemplo válido:
+Capabilities: pointer
 
-Dispositivo: Dispositivo sem fio 2.4G
+Exemplo:
+
+Device: 2.4G Wireless Device
 Kernel: /dev/input/event12
-Capacidades: ponteiro
+Capabilities: pointer
 
-Ignore dispositivos que sejam apenas teclado, controle do consumidor ou gesto.
-
-Guarda o caminho do Kernel (exemplo: /dev/input/event12).
+Guarde o caminho /dev/input/eventXX, ele será usado no script.
 
 ────────────────────────────────
-3) CRIAR O SCRIPT DO AUTOCLICKER
-────────────────────────────────
 
-Crie o arquivo no seu diretório pessoal:
+3. Criar o script do autoclicker
+
+Crie o arquivo no diretório home:
 
 nano holdclick.sh
 
-Cole o conteúdo baixo dentro do arquivo.
-Atenção: substituir/dev/input/event12 pelo evento correto do seu mouse.
+Cole o conteúdo abaixo no arquivo.
+Lembre-se de ajustar o valor de MOUSE_EVENT para o evento correto do seu mouse.
 
 #!/usr/bin/env bash
 
 MOUSE_EVENT="/dev/input/event12"
 
-correndo=falso
-clique_pid=""
+running=false
+click_pid=""
 
-iniciar_clicar() {
+start_clicking() {
 (
 while true; do
 ydotool click 0xC0
@@ -74,7 +74,7 @@ click_pid=$!
 }
 
 stop_clicking() {
-se [[ -n "$click_pid" ]]; entidade
+if [[ -n "$click_pid" ]]; then
 matar "$click_pid" 2>/dev/null
 clique_pid=""
 fi
@@ -96,20 +96,18 @@ Salve com Ctrl + O, Enter
 Saia com Ctrl + X
 
 ────────────────────────────────
-4) PERMISSÃO DE EXECUÇÃO
-────────────────────────────────
 
-Torne o script executável:
+4. Tornar o script executável
 
 chmod +x holdclick.sh
 
 ────────────────────────────────
-5) INICIAR O DAEMON DO YDOTOOL
-────────────────────────────────
+
+5. Iniciar o daemon do ydotool
 
 Este passo é obrigatório.
 
-O ydotool precisa criar um dispositivo de mouse virtual sem kernel, e é permitido com privilégios de administrador.
+O ydotool cria um dispositivo de mouse virtual sem kernel, o que exige privilégios de administrador.
 
 Executar:
 
@@ -118,24 +116,24 @@ sudo ydotoold &
 Se aparecer um número de processo, o daemon está rodando corretamente.
 
 ────────────────────────────────
-6) EXECUTOR O AUTOCLICKER
-────────────────────────────────
 
-Agora inicial o script:
+6. Executar o autoclicker
+
+Início do roteiro:
 
 sudo ./holdclick.sh
 
-O script ficará rodando em silêncio no terminal.
+O script ficará rodando em silêncio.
 
 Uso:
-– Clique uma vez com o botão escerdo → clique automático ATIVO
-– Clique recente → clique automático DESATIVA
 
-Não é necessário segurar o botão.
+Clique uma vez com o botão escerdo → clique automático ATIVA
+
+Clique recente → clique automático DESATIVA
 
 ────────────────────────────────
-7) COMO PARAR TUDO
-────────────────────────────────
+
+7. Parar o autoclicker
 
 Para cerrar o script e o daemon:
 
@@ -143,23 +141,31 @@ sudo pkill -f holdclick.sh
 sudo pkill ydotoold
 
 ────────────────────────────────
-OBSERVAÇÕES IMPORTANTES
+
+Observações importantes
+
+Velocidade extrema alta (milhas de cliques por segundo)
+
+Alguns jogos ou aplicações podem limitar ou detectar macros
+
+Função em Wayland e X11
+
+Não usa interface gráfica
+
+Baseado em entrada real do kernel
+
 ────────────────────────────────
 
-– A velocidade é extremamente alta (milhas de cliques por segundo)
-– Alguns jogos ou programas podem limitar ou detectar esse comportamento
-– Função em Wayland e X11
-– Não depende de interface gráfica
-– Usa input real do kernel, não simulação gráfica
+Conclusão
 
-────────────────────────────────
-CONCLUSÃO
-────────────────────────────────
+Este é um dos métodos mais rápidos e confiáveis para autoclick no Linux moderno, especialmente em Wayland, onde ferramentas antigas falham.
 
-Esse método é atualizado ou mais confiável e rápido para autoclick no Linux moderno, especialmente em Wayland, onde ferramentas antigas como xdotool falham.
+Possíveis evoluções:
 
-Se quiser evoluir depois, é possível:
-– removedor o uso de sudo com registros de udev
-– criar uma versão em C ainda mais rápida
-– transformar em serviço systemd
-– trocar o gato do rato por tecla do tecido
+Removedor de uso de sudo com registros udev
+
+Criar uma versão em C ainda mais rápida
+
+Transformar em serviço systemd
+
+Usar tecla do teclado como gato
